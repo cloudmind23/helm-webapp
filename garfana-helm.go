@@ -91,8 +91,8 @@ kubectl get secret --namespace default my-release-grafana -o jsonpath="{.data.ad
 test@tests-MacBook-Pro ~ % kubectl get secret --namespace default my-release-grafana -o yaml
 apiVersion: v1
 data:
-  admin-password: V0pwM0E0SmtwSHRxbDk5TG82Y1NWMU81T0tpUWdkQUF4dWpFRFNxdw==
-  admin-user: YWRtaW4=
+  admin-password: 
+  admin-user: 
   ldap-toml: ""
 kind: Secret
 metadata:
@@ -115,10 +115,10 @@ type: Opaque
 
 test@tests-MacBook-Pro ~ % kubectl get secret --namespace default my-release-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
-WJp3A4JkpHtql99Lo6cSV1O5OKiQgdAAxujEDSqw
+x
 
 
-admin-password: Above
+admin-password:x
 admin: admin
 
 log in it

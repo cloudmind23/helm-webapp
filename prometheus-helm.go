@@ -201,7 +201,7 @@ type: Opaque
 
 test@tests-MacBook-Pro ~ % kubectl get secret --namespace default my-release-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
-WJp3A4JkpHtql99Lo6cSV1O5OKiQgdAAxujEDSqw
+x
 
 
 admin-password: Above
