@@ -6,7 +6,7 @@ metadata:
   labels:
     app: {{ .Values.appName }}
 spec:
-  replicas: 5
+  replicas: 3
   selector:
     matchLabels:
       app: {{ .Values.appName }}
@@ -32,3 +32,23 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
+
+
+  # Will dynamtic replace follwoing from their config values
+
+  #1. .namespaces in values.yaml -> default
+  #2. .namespaces in prod.yaml -> prod
+  #3. .namespaces in dev.yaml -> dev
+
+  #1. .configmap in values.yaml -> myhelmapp-configmap-v1
+  #2. .configmap in prod.yaml -> myhelmapp-configmap-v1
+  #3. .configmap in dev.yaml -> myhelmapp-configmap-v1
+
+  #1. .CUSTOM_HEADER in values.yaml
+  #2. .CUSTOM_HEADER in prod.yaml
+  #3. .CUSTOM_HEADER in dev.yaml
+
+  #1. .appName in values.yaml -> mywebapp3
+
+  #2. .image.name in values.yaml -> devopsjourney1/mywebapp
+  #3. .image.tag in values.yaml -> latest

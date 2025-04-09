@@ -1,0 +1,27 @@
+
+
+appName: myhelmapp5
+
+port: 80
+
+namespace: default
+
+configmap:
+  name: myhelmapp-configmap-v1
+  data:
+    CUSTOM_HEADER: 'Putting in work 4 months since i started to work on development work Date April 4 2025 testing 123'
+ 
+image:
+  name: devopsjourney1/mywebapp 
+  tag: latest
+
+
+  #Default configuration for you helm chart
+
+  #customize it however you like it will reflect the template.
+
+  #This file contains default values for configurable parameters in your chart. Users can override these values when installing the chart.
+
+  #helm install mywebapp-release webapp1/ --values webapp1/values.yaml
+
+  #helm upgrade mywebapp-release webapp1/ --values webapp1/values.yaml
