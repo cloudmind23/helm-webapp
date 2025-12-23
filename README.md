@@ -67,7 +67,7 @@ Go to PWD (/Users/test/Desktop/helm-webapp) to webapp1 and write command below
 
 
 
-2. run.... helm install mywebapp-release webapp1/ --values mywebapp/values.yaml
+2. run.... helm install mywebapp-release webapp1/ --values webapp1/values.yaml
 
 
 

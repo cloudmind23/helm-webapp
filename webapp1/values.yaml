@@ -9,7 +9,7 @@ namespace: default
 configmap:
   name: myhelmapp-configmap-v1
   data:
-    CUSTOM_HEADER: 'Putting in work 4 months since i started to work on development work Date April 4 2025 testing 123'
+    CUSTOM_HEADER: 'Back to port 80.'
  
 image:
   name: devopsjourney1/mywebapp 

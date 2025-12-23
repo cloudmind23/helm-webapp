@@ -44,7 +44,7 @@ prometheus-server                     ClusterIP      10.100.105.235   <none>    
 
 the cluster-ip means it only assessble from inside your k8 cluster.
 
-Need to create access from outside the k8 cluster, will expose the service and convert it to NodePort and targer 90:90
+Need to create access from outside the k8 cluster, will expose the service and convert it to NodePort and target 90:90
 
 
 
@@ -120,7 +120,7 @@ Need to create access from outside the k8 cluster, will expose the service and c
 
 Expose to external 
 
-To access grafana from the outside you need a NodePort services.
+To access grafana from the outside your cluser you need a NodePort services.
 
 grafana-ext is from services/my-release-grafana from kubectl get all
 

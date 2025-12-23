@@ -1,9 +1,5 @@
 
-
-
-
-
-Create a Garfana helm chart in a Kubernetes cluster. (Minikub cluster running locally)
+Create a Garfana helm chart in a Kubernetes cluster. (Minikub cluster running locally)"
 
 
 helm repo add grafana https://grafana.github.io/helm-charts 
@@ -28,7 +24,7 @@ Expose to external
 
 
 
-To access grafana from the outside you need a NodePort services.
+To access grafana from the outside your cluster you need a NodePort services.
 
 
 
@@ -61,7 +57,6 @@ test@tests-MacBook-Pro Prometheus  % minikube service my-release-grafana-ext
 |-----------|------------------------|-------------|------------------------|
 🎉  Opening service default/my-release-grafana-ext in default browser...
 ❗  Because you are using a Docker driver on darwin, the terminal needs to be open to run it.
-
 
 sign into log-in page 
 

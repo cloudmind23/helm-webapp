@@ -2,7 +2,7 @@ namespace: development
 
 configmap:
   data:
-    CUSTOM_HEADER: 'This is my testing DEV environment Over a 4 month period since i started to work on DEV environments Date April 4 2025!'
+    CUSTOM_HEADER: 'Back to port 80'
 
 
 #helm install mywebapp-release-dev webapp1/ --values webapp1/values.yaml -f webapp1/values-dev.yaml -n development
