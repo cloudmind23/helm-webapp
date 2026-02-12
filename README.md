@@ -63,7 +63,7 @@ Go to PWD (/Users/test/Desktop/helm-webapp) to webapp1 and write command below
 
 
 
-1. run.... helm install mywebapp-release webapp1/ 
+1. run.... helm install mywebapp-release webapp1/
 
 
 

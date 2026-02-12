@@ -4,7 +4,7 @@ appName: myhelmapp5
 
 port: 80
 
-namespace: default
+namespace: default #changed from default for troubleshoot
 
 configmap:
   name: myhelmapp-configmap-v1
@@ -12,9 +12,8 @@ configmap:
     CUSTOM_HEADER: 'Back to port 80.'
  
 image:
-  name: devopsjourney1/mywebapp 
+  name: devopsjourney1/mywebapp
   tag: latest
-
 
   #Default configuration for you helm chart
 
@@ -25,3 +24,5 @@ image:
   #helm install mywebapp-release webapp1/ --values webapp1/values.yaml
 
   #helm upgrade mywebapp-release webapp1/ --values webapp1/values.yaml
+
+ 

@@ -225,6 +225,7 @@ Select Prometheus
 
 URL from your Prometheus page - > http://127.0.0.1:60960
 
+│ default     prometheus-server-ext                ClusterIP     10.96.207.130
 
 Save and test  -> data source is working.
 

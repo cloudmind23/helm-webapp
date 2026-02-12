@@ -163,3 +163,9 @@ https://github.com/grafana/helm-charts/blob/main/charts/grafana/README.md
 
 https://vaibhavji.medium.com/deploying-prometheus-and-grafana-for-observability-on-a-minikube-cluster-using-daemonset-266e2df7e454
 
+
+set up the ArgoCD Web Terminal
+
+ArgoCD hides the terminal code by default. You must tell the API server to enable it in the argocd-cm ConfigMap.
+
+kubectl patch cm argocd-cm -n argocd --type='json' -p='[{"op": "add", "path": "/data/exec.enabled", "value": "true"}]'
