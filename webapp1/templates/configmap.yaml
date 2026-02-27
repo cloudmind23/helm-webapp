@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.configmap.name }}
+  namespace: {{ .Values.namespace }}
+data:
+  BG_COLOR: '#12181b'
+  FONT_COLOR: '#FFFFFF'
+  CUSTOM_HEADER: {{ .Values.configmap.data.CUSTOM_HEADER }}
+
+
+  #Options are 
+
+  # Will dynamtic replace namespaces with values from 
+  
+  #1. namespaces in values.yaml -> default
+  #2. namespaces in prod.yaml -> prod
+  #3. namespaces in dev.yaml -> dev
+
+  #1. configmap in values.yaml -> myhelmapp-configmap-v1
+  #2. configmap in prod.yaml -> myhelmapp-configmap-v1
+  #3. configmap in dev.yaml -> myhelmapp-configmap-v1
+
+  #1. CUSTOM_HEADER in values.yaml
+  #2. CUSTOM_HEADER in prod.yaml
+  #3. CUSTOM_HEADER in dev.yaml

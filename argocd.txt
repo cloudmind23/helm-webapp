@@ -1,0 +1,17 @@
+To access argocd, read below
+
+1. go to k8 services and select argocd server in the argocd namespace.
+
+2. it's target-port is 8080
+
+3. you must port-forward the argocd server pod with shift-f then ok. 
+
+4. add admin creds and secret creds from secrets
+
+
+
+set up the ArgoCD Web Terminal
+
+ArgoCD hides the terminal code by default. You must tell the API server to enable it in the argocd-cm ConfigMap.
+
+kubectl patch cm argocd-cm -n argocd --type='json' -p='[{"op": "add", "path": "/data/exec.enabled", "value": "true"}]'

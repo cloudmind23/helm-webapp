@@ -1,0 +1,10 @@
+namespace: production
+
+configmap:
+  data:
+   CUSTOM_HEADER: 'Testing in PROD environment. Its not been 4 months since i started to work on PROD environments Date April 4, 2025!'
+#helm install mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n production
+
+#helm upgrade mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n production
+
+#Proudction must match namespace above..

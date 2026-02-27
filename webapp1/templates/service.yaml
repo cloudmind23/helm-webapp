@@ -14,3 +14,15 @@ spec:
     app: {{ .Values.appName }}
     tier: frontend
   type: LoadBalancer
+    
+    
+    
+ 
+ #Will dynamtic replace namespaces with values from 
+  
+  #1. .appName in values.yaml -> mywebapp3
+  
+  #2. .namespaces in values.yaml -> default
+
+
+ 
