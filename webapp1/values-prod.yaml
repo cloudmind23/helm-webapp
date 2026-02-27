@@ -7,4 +7,4 @@ configmap:
 
 #helm upgrade mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n production
 
-#Proudction must match namespace above.
+#Proudction must match namespace above..
