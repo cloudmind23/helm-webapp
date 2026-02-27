@@ -27,8 +27,8 @@ spec:
             name: {{ .Values.configmap.name }}
         resources:
           requests:
-            memory: "16Mi" 
-            cpu: "50m"    # 50 milli cores (1/20 CPU)
+            memory: "16Mi"
+            cpu: "50m" # 50 milli cores (1/20 CPU)
           limits:
             memory: "128Mi"
             cpu: "100m"
