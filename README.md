@@ -1,5 +1,5 @@
 
-#### Download and verify version of Kubernetes and Helm, Minikube via homebrew and Download Docker Desktop
+#### Download and verify version of Kubernetes and Helm, Minikube via homebrew and and and and and Download Docker Desktop.
 
 
 
