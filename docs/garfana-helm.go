@@ -132,10 +132,16 @@ Click Data Source
 
 Select Prometheus 
 
-URL from your Prometheus page - > http://127.0.0.1:60960
+URL from your Prometheus ext service page - > http://10.96.207.130 
+
+│ default      prometheus-server-ext                    ClusterIP     10.96.207.130 
 
 
 Save and test  -> data source is working.
+
+Successfully queried the Prometheus API.
+Next, you can start to visualize data by building a dashboard , or by querying data in the Explore view .
+
 
 
 
