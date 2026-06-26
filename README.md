@@ -1,378 +1,248 @@
+# helm-webapp
 
-#### Download and verify version of Kubernetes and Helm, Minikube via homebrew and and Download Docker Desktop.
+> *Deploying applications to Kubernetes — mission-critical, repeatable, and fast.*
 
+A production-grade Helm chart project for deploying a containerized web application to Kubernetes via Minikube, with multi-environment promotion (dev → prod) and a full observability stack powered by Prometheus and Grafana.
 
+---
 
+## Mission Overview
 
-1) mkdir helm-webapp folder than write 
+This repository demonstrates a complete Helm-based deployment workflow for platform and DevOps engineers who need environment parity, declarative configuration, and first-class observability out of the box. The chart ships with:
 
-helm create webapp1
+- **Multi-environment support** — isolated `development` and `production` namespaces with value overrides
+- **ConfigMap-driven runtime config** — background color, font color, and custom headers injected as env vars
+- **Monitoring stack** — Prometheus scraping + Grafana dashboards, both exposed via NodePort
+- **ArgoCD-ready** — GitOps-compatible structure for continuous delivery pipelines
 
+---
 
-
-
-2) Start by running the command 
-
-"minikube start" 
-
-to start container which will also docker container.
-
-
- - results: Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default.
-
- -verify kubectl is running - kubectl get all --all-namespaces | more
-
-
-
-
-
-
-# Create the helm chart
-
+## Architecture
 
 ```
-Create a folder than on terminal write command below
-
-
-
-
-helm create webapp1
+helm-webapp/
+├── webapp1/
+│   ├── Chart.yaml              # Chart metadata and versioning
+│   ├── values.yaml             # Base configuration (all environments inherit this)
+│   ├── values-dev.yaml         # Development overrides
+│   ├── values-prod.yaml        # Production overrides
+│   └── templates/
+│       ├── deployment.yaml     # 3-replica Deployment — image and configmap from values
+│       ├── service.yaml        # LoadBalancer Service on port 80
+│       ├── configmap.yaml      # Injects BG_COLOR, FONT_COLOR, CUSTOM_HEADER
+│       └── NOTES.txt           # Post-install instructions
+└── docs/
+    ├── prometheus-helm.go      # Prometheus setup reference
+    └── grafana-helm.go         # Grafana setup rfix my readme.md. Make it a space theme helm-webapp github. Make it look like something a director of engineering would write up.eference
 ```
 
+All Helm values flow from `values.yaml` as the base. Environment-specific files layer overrides on top via `-f`. Templates reference values with `{{ .Values.<key> }}` — no hardcoded strings in manifests.
 
+---
 
+## Prerequisites
 
-# Follow along with the video
+| Tool | Install |
+| ---- | ------- |
+| [Minikube](https://minikube.sigs.k8s.io/) | `brew install minikube` |
+| [kubectl](https://kubernetes.io/docs/tasks/tools/) | `brew install kubectl` |
+| [Helm 3](https://helm.sh/) | `brew install helm` |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Required — Minikube uses the Docker driver on macOS |
 
+---
 
-- Create the files per the video, copying and pasting from templates-original
+## Launch Sequence
 
-- you can also use the files in the solution folder
+### 1. Start the cluster
 
-# Install the first one
+```sh
+minikube start
 ```
-helm install mywebapp-release webapp1/ --values mywebapp/values.yaml
+
+Verify everything is nominal:
+
+```sh
+kubectl get all --all-namespaces
 ```
 
-# Upgrade after templating
+### 2. Validate the chart
 
+Always lint and dry-run before deploying:
 
+```sh
+helm lint webapp1/
+helm template webapp1/ --values webapp1/values.yaml
+```
 
-3. helm upgrade mywebapp-release webapp1/ --values webapp1/values.yaml
+### 3. Install
 
-test@Ahmeds-M1-Max-Pro helm-webapp % helm upgrade mywebapp-release webapp1/ --values webapp1/values.yaml
-Release "mywebapp-release" has been upgraded. Happy Helming!
-NAME: mywebapp-release
-LAST DEPLOYED: Sat Apr  5 00:34:01 2025
-NAMESPACE: default
-STATUS: deployed
-REVISION: 7
-TEST SUITE: None
-NOTES:
-servicename=$(k get service -l "app=myhelmapp5" -o jsonpath="{.items[0].metadata.name}")
-kubectl --namespace default port-forward service/myhelmapp5 8888:80
+```sh
+helm install mywebapp-release webapp1/ --values webapp1/values.yaml
+```
 
+### 4. Upgrade after changes
 
+```sh
+helm upgrade mywebapp-release webapp1/ --values webapp1/values.yaml
+```
 
-Step 1: Go to values.yaml and write your config.
+### 5. Access the application
 
+```sh
+# Option A — tunnel (recommended for LoadBalancer services)
+minikube tunnel
 
+# Option B — port-forward
+kubectl --namespace default port-forward service/<appName> 8888:80
+```
 
-Step 2: Go to helm templates and configure them with :{{ .Values.appName }} and {{ .Values.appName }} and more from your values.yaml
+---
 
+## Multi-Environment Deployment
 
+Namespaces provide environment isolation. Each environment gets its own Helm release with values layered on top of the base config.
 
+### Development
 
+```sh
+kubectl create namespace development
 
-# Accessing it
+helm install mywebapp-release-dev webapp1/ \
+  --values webapp1/values.yaml \
+  -f webapp1/values-dev.yaml \
+  -n development
 
+# Upgrade
+helm upgrade mywebapp-release-dev webapp1/ \
+  --values webapp1/values.yaml \
+  -f webapp1/values-dev.yaml \
+  -n development
+```
 
+### Production
 
-Step 4: minikube tunnel
+```sh
+kubectl create namespace production
 
+helm install mywebapp-release-prod webapp1/ \
+  --values webapp1/values.yaml \
+  -f webapp1/values-prod.yaml \
+  -n production
 
+# Upgrade
+helm upgrade mywebapp-release-prod webapp1/ \
+  --values webapp1/values.yaml \
+  -f webapp1/values-prod.yaml \
+  -n production
+```
 
+### Inspect all releases
 
-test@tests-MacBook-Pro helm-webapp % minikube tunnel
-
-🤷  The control-plane node minikube apiserver is not running: (state=Stopped)
-👉  To start a cluster, run: "minikube start"
-test@tests-MacBook-Pro helm-webapp % minikube start
-😄  minikube v1.34.0 on Darwin 12.5.1 (arm64)
-✨  Using the docker driver based on existing profile
-👍  Starting "minikube" primary control-plane node in "minikube" cluster
-🚜  Pulling base image v0.0.45 ...
-🏃  Updating the running docker "minikube" container ...
-🐳  Preparing Kubernetes v1.31.0 on Docker 27.2.0 ...
-🔎  Verifying Kubernetes components...
-    ▪ Using image docker.io/kubernetesui/metrics-scraper:v1.0.8
-    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
-    ▪ Using image docker.io/kubernetesui/dashboard:v2.7.0
-💡  Some dashboard features require the metrics-server addon. To enable all features please run:
-
-        minikube addons enable metrics-server
-
-🌟  Enabled addons: storage-provisioner, default-storageclass, dashboard
-🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
-test@tests-MacBook-Pro helm-webapp % 
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-# Create dev/prod
-
-
-
-
-Step 1: kubectl create namespace dev
-
-
-Step 1: kubectl create namespace development
-
-
-
-(if i want to delete "kubectl delete ns development")
-
-
-
-
-Step 2: helm install mywebapp-release-dev webapp1/ --values webapp1/values.yaml -f webapp1/values-dev.yaml -n development
-
-
-
-Step 3: helm upgrade mywebapp-release-dev webapp1/ --values webapp1/values.yaml -f webapp1/values-dev.yaml -n development
-
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-Step 1: kubectl create namespace prod
-
-Step 1: kubectl create namespace production
-
-
-
-if i want to delete "kubectl delete ns production"
-
-
-
-
-
-Step 2: helm install mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n production
-
-
-
-Step 2: helm upgrade mywebapp-release-prod webapp1/ --values webapp1/values.yaml -f webapp1/values-prod.yaml -n production
-
-
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
+```sh
 helm ls --all-namespaces
+```
 
+---
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Configuration Reference
 
+The base `values.yaml` controls all defaults:
 
-
-kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-ext
-
- Results: Able to Enter Prometheus UI
-
-
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-kubectl expose service my-release-grafana --type=NodePort --target-port=3000 --name=my-release-grafana-ext
-
- Results: service/my-release-grafana exposed
-
-
-
-To access grafana UI 
-  
-  run minikube service my-release-grafana-ext
-  
-  copy URL/IP address to access grafana UI
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-kubectl get svc
-
-prometheus-server-ext
-my-release-grafana-ext
-
-decrypt password 
-
-
---------------------------------------------------------------------------------------------------------------------
-
-
-
-Helm is a package manager for Kubernetes that simplifies the deployment and management of applications. Helm uses a packaging format called charts, which are collections of files that describe a set of Kubernetes resources. Below is an example of a simple Helm chart, and I'll explain each part:
-
-myapp/
-|-- Chart.yaml
-|-- values.yaml
-|-- templates/
-|   |-- deployment.yaml
-|   |-- service.yaml
-|-- charts/
-|-- README.md
-
-
-
-wordpress/
-  Chart.yaml          # A YAML file containing  information about the chart
-  LICENSE             # OPTIONAL: A plain text file containing the license for the chart
-  README.md           # OPTIONAL: A human-readable README file
-  values.yaml         # The default configuration values for this chart
-  values.schema.json  # OPTIONAL: A JSON Schema for imposing a structure on the values.yaml file
-  charts/             # A directory containing any charts upon which this chart depends.
-  crds/               # Custom Resource Definitions
-  templates/          # A directory of templates that, when combined with values,
-                      # will generate valid Kubernetes manifest files.
-  templates/NOTES.txt # OPTIONAL: A plain text file containing short usage notes
-
-
-1. Chart.yaml:
-
-This file contains metadata about the Helm chart, such as the name, version, description, and maintainer.
-
-apiVersion: v2
-name: myapp
-description: A Helm chart for deploying My App
-version: 0.1.0
-
-
-2. #values.yaml:
-
-This file contains default values for configurable parameters in your chart. Users can override these values when installing the chart.
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# Default values for myapp.
-
-appName: myhelmapp3
-
-port: 80
-
+```yaml
+appName: myhelmapp
 namespace: default
+
+image:
+  name: devopsjourney1/mywebapp
+  tag: latest
 
 configmap:
   name: myhelmapp-configmap-v1
   data:
-    CUSTOM_HEADER: 'This app was deployed with helm!'
- 
-image:
-  name: devopsjourney1/mywebapp 
-  tag: latest
+    BG_COLOR: "#ffffff"
+    FONT_COLOR: "#000000"
+    CUSTOM_HEADER: "This app was deployed with Helm!"
+```
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+> **Note:** Quote `CUSTOM_HEADER` values in `configmap.yaml` if they contain spaces or special characters — an unquoted value will fail YAML parsing with `mapping values are not allowed in this context`.
 
-3. templates////////////: 
+---
 
-This directory contains Kubernetes YAML files that define the resources to be deployed. These files can include Deployments, Services, ConfigMaps, etc.
+## Observability Stack
 
+### Prometheus
 
-Deployment.yaml:
-	apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ include "myapp.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "myapp.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "myapp.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: {{ include "myapp.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-    spec:
-      containers:
-        - name: myapp
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+```sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/prometheus
 
+# Expose the UI
+kubectl expose service prometheus-server \
+  --type=NodePort \
+  --target-port=9090 \
+  --name=prometheus-server-ext
 
+minikube service prometheus-server-ext
+```
 
-Service.yaml:
-	apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "myapp.fullname" . }}
-  labels:
-    app.kubernetes.io/name: {{ include "myapp.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-      targetPort: 80
-  selector:
-    app.kubernetes.io/name: {{ include "myapp.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+### Grafana
 
+```sh
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install my-release grafana/grafana
 
+# Expose the UI
+kubectl expose service my-release-grafana \
+  --type=NodePort \
+  --target-port=3000 \
+  --name=my-release-grafana-ext
 
+minikube service my-release-grafana-ext
+```
 
-4. charts/:
+Retrieve the admin password:
 
+```sh
+kubectl get secret --namespace default my-release-grafana \
+  -o jsonpath="{.data.admin-password}" | base64 --decode; echo
+```
 
-This directory is used for storing any sub-charts if your main chart depends on other charts.
+In Grafana, add Prometheus as a data source using the ClusterIP of `prometheus-server-ext`. Import dashboard **ID 6417** for Kubernetes cluster metrics.
 
+---
 
-README.md:
-Documentation for the chart, providing instructions on how to use it and any other relevant information.
+## ArgoCD (GitOps)
 
+Forward the ArgoCD UI to localhost:
 
-Helm is a package manager for Kubernetes that simplifies the process of deploying and managing complex applications. It provides a declarative approach to defining and managing applications, making it easier for developers and operations teams to collaborate.
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
 
-Here are some of the key benefits of using Helm:
+Enable the web terminal:
 
-Simplified application deployment: Helm allows you to define an application's configuration and dependencies in a single file, making it easier to deploy and manage.
-Version control: Helm uses a versioning system to track changes to your applications, making it easy to roll back to previous versions if necessary.
-Reusable charts: Helm charts can be shared and reused across different projects, saving time and effort.
-Integration with Kubernetes: Helm is tightly integrated with Kubernetes, making it easy to manage applications running on the platform.
-Community support: Helm has a large and active community, which means that there are plenty of resources available to help you get started and troubleshoot problems.
-Overall, Helm is a powerful tool that can help you simplify the process of deploying and managing applications on Kubernetes.
+```sh
+kubectl patch cm argocd-cm -n argocd \
+  --type='json' \
+  -p='[{"op": "add", "path": "/data/exec.enabled", "value": "true"}]'
+```
 
+---
 
-Helm simplifies the management of Kubernetes applications in several ways, even if you are proficient in Kubernetes:
+## Teardown
 
-Declarative Configuration: Helm uses a declarative approach, where you define the desired state of your application in a template (chart). This is in contrast to Kubernetes' imperative approach, where you specify a series of steps to achieve the desired state. Helm's declarative approach makes it easier to manage complex applications and understand their configuration.
+```sh
+helm uninstall mywebapp-release
+helm uninstall mywebapp-release-dev -n development
+helm uninstall mywebapp-release-prod -n production
 
-Reusable Charts: Helm charts can be shared and reused across different projects. This means you don't have to start from scratch every time you want to deploy a new application. It also promotes consistency and standardization.
+kubectl delete namespace development production
+minikube stop
+```
 
-Version Control: Helm uses a versioning system to track changes to your charts. This allows you to easily roll back to previous versions if necessary, providing a safety net for your deployments.
+---
 
-Package Management: Helm provides a package management system for Kubernetes applications. This means you can easily search for, install, and update charts from a public or private repository.
+## Why Helm
 
-Community Support: Helm has a large and active community, which means there are plenty of resources available to help you get started and troubleshoot problems.
-
-Simplified Configuration Management: Helm can help you manage complex configuration settings for your Kubernetes applications. You can define values in a values.yaml file and pass them to your charts, making it easier to customize your deployments.
-
-In summary, while you may be proficient in Kubernetes, Helm can still make your life easier by providing a more efficient and streamlined way to manage your applications. It takes care of many of the repetitive tasks involved in Kubernetes deployments, allowing you to focus on building and deploying your applications.
+Raw Kubernetes manifests don't scale across environments — you end up maintaining near-duplicate YAML with subtle drift between dev and prod. Helm solves this with a single source of truth (`values.yaml`) and a templating engine that renders environment-specific manifests at deploy time. The result is fewer incidents caused by configuration drift, auditable releases with rollback, and charts that can be promoted through environments without touching template logic.
