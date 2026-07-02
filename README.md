@@ -61,8 +61,6 @@ Live cluster state observed via [K9s](https://k9scli.io/) against the Minikube e
 **Deployments — all namespaces** (`default`, `development`, `production`, `argocd`)
 ![K9s deployments view](docs/screenshots/k9s-deployments.png)
 
-**Services**
-![K9s services view](docs/screenshots/k9s-services.png)
 
 ---
 
