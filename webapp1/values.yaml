@@ -9,11 +9,11 @@ namespace: default #changed from default for troubleshoot.
 configmap:
   name: myhelmapp-configmap-v1
   data:
-    CUSTOM_HEADER: 'Back to port 80.'
+   CUSTOM_HEADER: 'Back to port 80.'
  
 image:
   name: devopsjourney1/mywebapp
-  tag: latest
+  tag: invalid-tag-for-demo
 
   #Default configuration for you helm chart
 
