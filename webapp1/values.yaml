@@ -13,7 +13,7 @@ configmap:
  
 image:
   name: devopsjourney1/mywebapp
-  tag: invalid-tag-for-demo
+  tag: latest
 
   #Default configuration for you helm chart
 
